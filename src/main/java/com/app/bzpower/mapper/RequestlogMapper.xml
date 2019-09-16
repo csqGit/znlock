@@ -1,0 +1,360 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.app.bzpower.dao.RequestlogMapper">
+	<resultMap id="BaseResultMap"
+		type="com.app.bzpower.entity.Requestlog">
+		<id column="rid" jdbcType="INTEGER" property="id" />
+		<result column="voltage" jdbcType="VARCHAR" property="voltage" />
+		<result column="classes" jdbcType="VARCHAR" property="classes" />
+		<result column="mac" jdbcType="VARCHAR" property="mac" />
+		<result column="did" jdbcType="VARCHAR" property="did" />
+		<result column="requesttime" jdbcType="VARCHAR"
+			property="requesttime" />
+		<result column="opentime" jdbcType="VARCHAR"
+			property="opentime" />
+		<result column="closeTime" jdbcType="VARCHAR"
+			property="closetime" />
+		<result column="status" jdbcType="INTEGER" property="status" />
+		<result column="realname" jdbcType="VARCHAR"
+			property="realname" />
+		<result column="phone" jdbcType="VARCHAR" property="phone" />
+		<result column="reason" jdbcType="VARCHAR" property="reason" />
+		<result column="examineresult" jdbcType="VARCHAR"
+			property="examineresult" />
+		<result column="dtm" jdbcType="VARCHAR" property="dtm" />
+		<result column="opennum" jdbcType="VARCHAR" property="opennum" />
+		<result column="remarks" jdbcType="VARCHAR" property="remarks" />
+		<association property="companyId"
+			javaType="com.app.bzpower.entity.Company">
+			<id column="cid" property="id" />
+			<result column="companyName" jdbcType="VARCHAR"
+				property="companyname" />
+			<result column="voltage" jdbcType="VARCHAR" property="voltage" />
+		</association>
+		<association property="adminId"
+			javaType="com.app.bzpower.entity.Admin">
+			<id column="aid" property="id" />
+			<result column="username" jdbcType="VARCHAR"
+				property="username" />
+			<result column="realname" jdbcType="VARCHAR"
+				property="realname" />
+			<result column="password" jdbcType="VARCHAR"
+				property="password" />
+			<result column="telephone" jdbcType="VARCHAR"
+				property="telephone" />
+			<result column="type" jdbcType="INTEGER" property="type" />
+			<result column="voltage" jdbcType="VARCHAR" property="voltage" />
+		</association>
+		<association property="lockinfoId"
+			javaType="com.app.bzpower.entity.Lockinfo">
+			<id column="lid" property="id" />
+			<result column="did" jdbcType="VARCHAR" property="did" />
+			<result column="mac" jdbcType="VARCHAR" property="mac" />
+			<result column="passcode" jdbcType="VARCHAR"
+				property="passcode" />
+			<result column="classes" jdbcType="VARCHAR" property="classes" />
+			<result column="voltage" jdbcType="VARCHAR" property="voltage" />
+		</association>
+
+		<association property="transformersubId"
+			javaType="com.app.bzpower.entity.TransformerSub">
+			<id column="tid" property="id" />
+			<result column="transformersub" jdbcType="VARCHAR"
+				property="transformersub" />
+		</association>
+
+	</resultMap>
+
+	<sql id="Base_Column_List">
+		rid, voltage, classes, mac, did, requesttime, opentime,
+		closeTime,
+		status, realname,
+		phone, reason, examineresult, dtm, opennum,
+		remarks,
+		company_id, admin_id,
+		lockinfo_id
+	</sql>
+
+
+	<!-- 以下为管理员app查询的所有sql -->
+	
+	
+	<!-- 管理员app查询未审核的日志 -->
+	<select id="selectlogListJSONByOpentimerIsNull"
+		resultMap="BaseResultMap">
+		select r.rid, r.voltage, r.classes, r.mac, r.did,
+		r.requesttime,
+		r.opentime, r.closeTime, r.status, r.realname,
+		r.phone, r.reason,
+		r.examineresult, r.dtm,
+		r.opennum, r.remarks, c.companyname,
+		r.transformersub_id, t.tid, t.transformersub
+		from
+		requestlog r
+		inner join
+		company c
+		on c.cid = r.company_id
+		inner join lockinfo l
+		on l.lid =
+		r.lockinfo_id
+		inner join transformersub t
+		on t.tid = r.transformersub_id
+		where
+		r.status = #{status}
+		and r.opentime is null
+		and r.company_id = #{companyid}
+		and r.requesttime
+		like #{requesttime}"%"
+		order by requesttime desc
+
+	</select>
+
+
+	<!-- 管理员查询已审核日志 -->
+	<select id="selectlogListJSONByOpentimerIsNotNull"
+		resultMap="BaseResultMap">
+		select r.rid, r.voltage, r.classes, r.mac, r.did,
+		r.requesttime,
+		r.opentime, r.closeTime, r.status, r.realname,
+		r.phone,
+		r.reason,
+		r.examineresult, r.dtm,
+		r.opennum, r.remarks, c.companyname,
+		r.transformersub_id, t.tid, t.transformersub
+		from
+		requestlog r
+		inner join
+		company c
+		on c.cid = r.company_id
+		inner join lockinfo l
+		on l.lid =
+		r.lockinfo_id
+		inner join transformersub t
+		on t.tid = r.transformersub_id
+		where
+		r.opentime is not null
+		and r.company_id = #{companyid}
+		and
+		r.requesttime like #{requesttime}"%"
+		order by requesttime desc
+	</select>
+
+
+	<!-- 根据主键id查询日志信息 -->
+	<select id="selectByPrimaryKey" resultMap="BaseResultMap">
+		select r.rid,
+		r.voltage, r.classes, r.mac, r.did,
+		r.requesttime, r.opentime,
+		r.closeTime, r.status, r.realname,
+		r.phone, r.reason, r.examineresult,
+		r.dtm,
+		r.opennum, c.companyname
+		from requestlog r
+		inner join company c
+		on
+		c.cid = r.company_id
+		inner join lockinfo l
+		on l.lid = r.lockinfo_id
+		where r.rid = #{id}
+	</select>
+
+
+	<!-- 管理员app根据管理员id和单位id查询日志信息 -->
+	<select id="selectLogHositoryListByAdminIdAndCompanyId"
+		resultMap="BaseResultMap">
+		select r.rid,
+		r.voltage, r.classes, r.mac, r.did,
+		r.requesttime, r.opentime,
+		r.closeTime, r.status, r.realname,
+		r.phone,
+		r.reason, r.examineresult,
+		r.dtm, r.lockinfo_id, r.remarks,
+		r.opennum, c.companyname, l.lid,
+		l.transformersub_id, t.tid, t.transformersub
+		from requestlog r
+		inner
+		join
+		company c
+		on c.cid = r.company_id
+		inner join lockinfo l
+		on l.lid = r.lockinfo_id
+		inner join transformersub t
+		on
+		t.tid = r.transformersub_id
+		where r.company_id =
+		#{companyId}
+	</select>
+	
+	
+	
+	<update id="updateByPrimaryKeySelective">
+		update requestlog set
+		status = #{requestlog.status}, opentime =
+		#{requestlog.opentime}, opennum = #{requestlog.opennum}
+		admin_id = #{requestlog.adminId.id}
+		where
+		rid = #{requestlog.id}
+	</update>
+	<!-- 以上为管理员app查询的所有业务 end -->
+
+
+
+
+
+	<!-- 以下为管理员pc查询的所有sql start -->
+	<!-- 管理员pc端查询根据单位名称，电压等级分页查询日志 -->
+	<select id="selectlogList" resultMap="BaseResultMap">
+		select r.rid, r.voltage, r.classes, r.mac, r.did,
+		r.requesttime,
+		r.opentime, r.closeTime, r.status, r.realname,
+		r.phone, r.reason,
+		r.examineresult, r.dtm,
+		r.opennum, c.companyname, t.tid,
+		t.transformersub
+		from
+		requestlog r
+		inner join company c
+		on c.cid =
+		r.company_id
+
+		inner join lockinfo l
+		on l.lid = r.lockinfo_id
+		inner join transformersub t
+		on
+		t.tid = r.transformersub_id
+		where r.voltage = #{voltage}
+		and
+		r.company_id = #{companyId}
+		<if test="pageData.limit != 0">
+			limit #{pageData.startPage}, #{pageData.limit}
+		</if>
+	</select>
+
+
+
+	<!-- 以下为管理员pc查询的所有业务 end -->
+
+	<select id="countByExample" resultType="java.lang.Long">
+		select count(r.rid)
+		from
+		requestlog r
+		inner join company c
+		on c.cid = r.company_id
+		inner join lockinfo l
+		on l.lid =
+		r.lockinfo_id
+		where r.voltage = #{voltage}
+		and r.company_id =
+		#{companyId.id}
+		
+	</select>
+
+
+
+
+
+
+
+	<!-- 以下为用户的所有业务 -->
+
+	<!-- 用户根据电话号码和单位id查询自己的使用锁的历史记录 -->
+	<select id="selectLogHositoryList" resultMap="BaseResultMap">
+		select r.rid,
+		r.voltage, r.classes, r.mac, r.did,
+		r.requesttime, r.opentime,
+		r.closeTime, r.status, r.realname,
+		r.phone, r.reason, r.examineresult,
+		r.dtm,
+		r.opennum, c.cid, c.companyname, a.realname,
+		r.lockinfo_id,
+		l.transformersub_id, l.lid
+		from requestlog r
+		inner join
+		company c
+		on c.cid
+		= r.company_id
+		inner join admin a
+		on a.aid = r.admin_id
+		inner join
+		lockinfo l
+		on l.lid = r.lockinfo_id
+		where r.company_id =
+		#{companyId}
+		and
+		r.phone = #{phone}
+	</select>
+
+
+	<!-- 用户app查询待审核的日志 -->
+	<select id="selectRequestLogByOpentimeIsNull" resultMap="BaseResultMap">
+		select r.rid,
+		r.voltage, r.classes, r.mac, r.did,
+		r.requesttime, r.opentime,
+		r.closeTime, r.status, r.realname,
+		r.phone, r.reason, r.examineresult,
+		r.dtm,
+		r.opennum, c.companyname, t.tid, t.transformersub
+		from requestlog r
+		inner join
+		company c
+		on c.cid = r.company_id
+		inner join lockinfo l
+		on l.lid = r.lockinfo_id
+		inner join transformersub t
+		on
+		t.tid = r.transformersub_id
+		where r.phone = #{phone}
+		and r.status =
+		#{status}
+		and r.requesttime like #{requesttime}"%"
+		order by r.requesttime desc
+	</select>
+
+
+
+	<!-- 用户查询已经审核的日志 -->
+	<select id="selectRequestLogByOpentimeIsNotNull"
+		resultMap="BaseResultMap">
+		select r.rid,
+		r.voltage, r.did,
+		r.requesttime, r.opentime,
+		r.closeTime, r.status, r.realname,
+		r.phone,
+		r.reason, r.examineresult,
+		r.dtm,
+		r.opennum, c.companyname, t.tid,
+		t.transformersub
+		from requestlog r
+		inner join
+		company c
+		on c.cid =
+		r.company_id
+		inner join lockinfo l
+		on l.lid = r.lockinfo_id
+		inner join transformersub t
+		on
+		t.tid = r.transformersub_id
+		where r.phone = #{phone}
+		and opentime is not null
+		and r.requesttime like #{requesttime}"%"
+		order by r.requesttime desc
+	</select>
+
+
+
+
+	<!-- 用户新增开锁日志 -->
+	<insert id="insertSelective"
+		parameterType="com.app.bzpower.entity.Requestlog">
+		insert into requestlog (voltage, did, requesttime,
+		status, realname, phone,
+		reason, dtm, company_id, lockinfo_id,
+		transformersub_id) values
+		(#{record.voltage}, #{record.did}, #{record.requesttime}, #{record.status},
+		#{record.realname},
+		#{record.phone}, #{record.reason}
+		, #{record.dtm}, #{record.companyId.id},
+		#{record.lockinfoId.id}, #{record.transformersubId.id})
+	</insert>
+
+</mapper>

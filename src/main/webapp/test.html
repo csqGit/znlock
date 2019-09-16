@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title></title>
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+</head>
+<body>
+
+<!-- <form action="http://api.gizwits.com/app/users" method="post">
+	<label>创建用户</label>
+	<div>
+		<input type="text" name="X-Gizwits-Application-Id" value="8403294ece2d48bb92960d21f6020b5c">
+	</div>
+	<input type="submit" value="提交">
+</form> -->
+
+<button onclick="test();">点击注册</button>
+<script type="text/javascript">
+
+
+
+	
+	function test(){
+		$.ajax({
+			url: 'http://api.gizwits.com/app/users',
+			type: 'post',
+			data : {
+					  header: {
+						  'X-Gizwits-Application-Id': '8403294ece2d48bb92960d21f6020b5c'
+					  },
+					  body: {
+						  "phone_id": "8403294ece2d48bb92960d21f6020b5c"
+					  }
+					
+			}, 
+			success: function(res){
+				
+			}, 
+			faild: function(err){
+				alert(err)
+			}
+		});
+	}
+	
+
+</script>
+
+</body>
+</html>
