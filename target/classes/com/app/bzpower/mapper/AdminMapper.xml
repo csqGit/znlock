@@ -10,8 +10,8 @@
 			property="realname" />
 		<result column="password" jdbcType="VARCHAR"
 			property="password" />
-		<result column="telephone" jdbcType="VARCHAR"
-			property="telephone" />
+		<result column="phone" jdbcType="VARCHAR"
+			property="phone" />
 		<result column="type" jdbcType="INTEGER" property="type" />
 		<result column="voltage" jdbcType="VARCHAR" property="voltage" />
 		<association property="companyId"
@@ -25,13 +25,13 @@
 
 
 	<sql id="Base_Column_List">
-		aid, username, realname, password, telephone, type, voltage, company_id
+		aid, username, realname, password, phone, type, voltage, company_id
 	</sql>
 
 	<select id="selectByExample"
 		parameterType="com.app.bzpower.entity.Admin" resultMap="BaseResultMap">
 		select
-		a.aid, a.username, a.realname, a.password, a.telephone, a.type, a.voltage,
+		a.aid, a.username, a.realname, a.password, a.phone, a.type, a.voltage,
 		a.company_id, c.cid, c.companyname
 		from admin a
 		inner join company c
@@ -49,7 +49,7 @@
 	<select id="selectAdminList"
 		parameterType="com.app.bzpower.entity.Admin" resultMap="BaseResultMap">
 		select
-		a.aid, a.username, a.realname, a.password, a.telephone, a.type, a.voltage,
+		a.aid, a.username, a.realname, a.password, a.phone, a.type, a.voltage,
 		a.company_id,c.cid,  c.companyname
 		from admin a
 		inner join company c
@@ -63,7 +63,7 @@
 	<select id="selectAdminByCompany"
 		parameterType="java.lang.Integer" resultMap="BaseResultMap">
 		select
-		a.aid, a.username, a.realname, a.password, a.telephone, a.type, a.voltage,
+		a.aid, a.username, a.realname, a.password, a.phone, a.type, a.voltage,
 		a.company_id,c.cid,  c.companyname
 		from admin a
 		inner join company c
@@ -90,8 +90,8 @@
 			<if test="password != null">
 				password,
 			</if>
-			<if test="telephone != null">
-				telephone,
+			<if test="phone != null">
+				phone,
 			</if>
 			<if test="type != null">
 				type,
@@ -116,8 +116,8 @@
 			<if test="password != null">
 				#{password,jdbcType=VARCHAR},
 			</if>
-			<if test="telephone != null">
-				#{telephone,jdbcType=VARCHAR},
+			<if test="phone != null">
+				#{phone,jdbcType=VARCHAR},
 			</if>
 			<if test="type != null">
 				#{type,jdbcType=INTEGER},
@@ -134,7 +134,7 @@
 
 	<select id="selectByPrimaryKey"
 		parameterType="java.lang.Integer" resultMap="BaseResultMap">
-		select a.aid, a.username, a.realname, a.password, a.telephone,
+		select a.aid, a.username, a.realname, a.password, a.phone,
 		a.type, a.voltage, a.company_id, c.companyname
 		from admin a
 		inner join company c
@@ -145,18 +145,18 @@
 
 	<select id="selectAdminByPhone" parameterType="java.lang.String"
 		resultMap="BaseResultMap">
-		select a.aid, a.username, a.realname, a.password, a.telephone,
+		select a.aid, a.username, a.realname, a.password, a.phone,
 		a.type, a.voltage, a.company_id, c.cid, c.companyname
 		from admin a
 		inner join company c
 		on c.cid = a.company_id
-		where a.telephone = #{phone}
+		where a.phone = #{phone}
 	</select>
 
 
 	<select id="selectAdminByUsername"
 		parameterType="java.lang.String" resultMap="BaseResultMap">
-		select a.aid, a.username, a.realname, a.password, a.telephone,
+		select a.aid, a.username, a.realname, a.password, a.phone,
 		a.type, a.voltage, a.company_id, c.companyname
 		from admin a
 		inner join company c
@@ -189,8 +189,8 @@
 			<if test="password != null">
 				password = #{password,jdbcType=VARCHAR},
 			</if>
-			<if test="telephone != null">
-				telephone = #{telephone,jdbcType=VARCHAR},
+			<if test="phone != null">
+				phone = #{phone,jdbcType=VARCHAR},
 			</if>
 			<if test="type != null">
 				type = #{type,jdbcType=INTEGER},

@@ -30,7 +30,7 @@ public class JPushSHUtils {
                 .build();
         try {
            PushResult result =  jpushClient.sendPush(payload);
-           System.out.println(result);
+//           System.out.println(result);
             return true;
         } catch (Exception e) {
             e.printStackTrace();
@@ -46,4 +46,8 @@ public class JPushSHUtils {
     private static JPushClient createInstance() {
         return jpushClient == null ? new JPushClient(MASTER_SECRET, APP_KEY) : jpushClient;
     }
+    
+    public static void main(String[] args) {
+    	pushMessageToUser("西安博展", "ceshi", "ceshi2");
+	}
 }

@@ -4,11 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.app.bzpower.entity.Admin;
 import com.app.bzpower.entity.PageData;
@@ -21,6 +25,8 @@ import com.app.bzpower.service.RequestlogService;
 import com.app.bzpower.service.TransformerSubService;
 import com.app.bzpower.service.UserService;
 import com.app.bzpower.util.JPushSHUtils;
+import com.app.bzpower.util.JPushUtils;
+import com.app.bzpower.util.Md5Utils;
 
 /**
  * 管理员app控制类，主要功能有：
@@ -64,7 +70,7 @@ public class AdminController {
 	public RequestResult adminRegister(Admin admin) {
 		RequestResult rr = new RequestResult();
 		try {
-			Admin existAdmin = adminService.selectAdminByPhone(admin.getTelephone());
+			Admin existAdmin = adminService.selectAdminByPhone(admin.getPhone());
 			if (existAdmin != null) {
 				rr.setCode(100);// 可以注册
 				return rr;
@@ -79,6 +85,45 @@ public class AdminController {
 			return rr;
 		}
 	}
+	
+	
+	@RequestMapping(value = "/adminLogin")
+	@ResponseBody
+	public RequestResult<Object> adminLogin(HttpServletRequest request, String username, String password, String voltage) {
+		RequestResult<Object> rr = new RequestResult<Object>();
+
+		try {
+
+			Admin newAdmin = null;
+			
+			Admin existUser = adminService.selectAdminByUsername(username);
+			if (existUser == null) {
+				rr.setResult("用户名不存在");
+				return rr;
+			} else {
+				String newPass = Md5Utils.encodingMd5(username + password);// 密码加密
+				Admin admin = new Admin();
+				admin.setUsername(username);
+				admin.setPassword(newPass);
+				admin.setVoltage(voltage);
+				newAdmin = adminService.adminLogin(admin);
+				if (newAdmin != null) {// 表示登录成功
+					rr.setCode(100);
+					rr.setResult(newAdmin);
+					return rr;
+				} else {
+					rr.setResult("密码错误");
+					return rr;
+				}
+			}
+
+		} catch (Exception e) {
+			rr.setResult("登录错误，请重试");
+			return rr;
+		}
+	}
+	
+	
 
 	/**
 	 * 查询电话号码是否已经注册
@@ -155,20 +200,11 @@ public class AdminController {
 				String dtm = req.getDtm();
 				if(requestlog.getStatus() == 1) //表示同意开锁
 					requestlog.setOpennum(this.computerDtm(dtm));
-				
 				requestlogService.updateRequestlog(requestlog);
-				
-				String username = user.getUsername();
-				JPushSHUtils.pushMessageToUser(username, "通知",
-						"管理员已" + (requestlog.getStatus() == 1 ? "同意" : "拒绝") + "开锁,开锁码：" + requestlog.getOpennum());
-				
-				//				if (requestlog.getStatus() == 1) {
-//					// 管理员将审核信息推送给指定用户
-//					JPushSHUtils.pushMessageToUser(username, "通知",
-//							"管理员已" + (requestlog.getStatus() == 1 ? "同意" : "拒绝") + "开锁,开锁码：" + openNum);
-//				} else {// 管理员将审核信息推送给指定用户
-//					JPushSHUtils.pushMessageToUser(username, "通知", "管理员已" + requestlog.getExamineresult() + "开锁");
-//				}
+//				JPushSHUtils.pushMessageToUser(username, "通知",
+//						"管理员已" + (requestlog.getStatus() == 1 ? "同意" : "拒绝") + "开锁,开锁码：" + requestlog.getOpennum());
+				JPushUtils.pushMessageToUser(requestlog.getPhone(), "通知", "管理员已" 
+							+ (requestlog.getStatus() == 1 ? "同意" : "拒绝") + "开锁,开锁码：" + requestlog.getOpennum());
 				rr.setResult("更新成功");
 			} else {
 				rr.setCode(200);

@@ -24,6 +24,7 @@ import com.app.bzpower.service.RequestlogService;
 import com.app.bzpower.service.TransformerSubService;
 import com.app.bzpower.service.UserService;
 import com.app.bzpower.util.JPushSQUtils;
+import com.app.bzpower.util.JPushUtils;
 import com.app.bzpower.util.Md5Utils;
 
 /**
@@ -217,10 +218,14 @@ public class UserController {
 			List<Admin> adminList = adminService.selectAdminByCompany(requestlog.getCompanyId().getId());
 			// 用户将申请信息推送给管理员app
 			for (int i = 0; i < adminList.size(); i++) {
-				String adminPhone = adminList.get(i).getTelephone();
+				String adminUsername = adminList.get(i).getUsername();
 				String voltage = adminList.get(i).getVoltage();
+//				if (requestlog.getVoltage().equals(voltage) && requestlog.getCompanyId().getId() == adminList.get(i).getCompanyId().getId()) {
+//					JPushSQUtils.pushMessageToAdmin(adminUsername, "消息", "用户" + user.getRealname() + "请求开锁");
+//				} else {
+//				}
 				if (requestlog.getVoltage().equals(voltage) && requestlog.getCompanyId().getId() == adminList.get(i).getCompanyId().getId()) {
-					JPushSQUtils.pushMessageToAdmin(adminPhone, "消息", "用户" + user.getRealname() + "请求开锁");
+					JPushUtils.pushMessageToUser(adminUsername,"消息", "用户" + user.getRealname() + "请求开锁");
 				} else {
 				}
 			}

@@ -190,7 +190,7 @@
 	<update id="updateByPrimaryKeySelective">
 		update requestlog set
 		status = #{requestlog.status}, opentime =
-		#{requestlog.opentime}, opennum = #{requestlog.opennum}
+		#{requestlog.opentime}, opennum = #{requestlog.opennum},
 		admin_id = #{requestlog.adminId.id}
 		where
 		rid = #{requestlog.id}

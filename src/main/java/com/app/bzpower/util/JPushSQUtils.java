@@ -13,13 +13,19 @@ import cn.jpush.api.push.model.notification.Notification;
  */
 public class JPushSQUtils {
 
-    //审核app的APPKEY
-    private final static String APP_KEY = "570359503dfeee84ea23cbca";
+//    //审核app的APPKEY
+//    private final static String APP_KEY = "570359503dfeee84ea23cbca";
+//    //密钥
+//    private final static String MASTER_SECRET = "ccdfbaa4ee6deda632c90cca";
+	
+	
+	//申请app的APPKEY
+    private final static String APP_KEY = "916af83d8fb94c8268d79e00";
     //密钥
-    private final static String MASTER_SECRET = "ccdfbaa4ee6deda632c90cca";
+    private final static String MASTER_SECRET = "6c829c085a547bb51387bcd6";
     private static JPushClient jpushClient;
 
-    //给某个用户发送消息
+    //给某个管理员发送消息
     public static boolean pushMessageToAdmin(String userid, String title, String content) {
         jpushClient = createInstance();
         System.out.println(jpushClient);

@@ -44,7 +44,7 @@ public class Admin {
      *
      * @mbg.generated Thu Aug 22 17:02:20 CST 2019
      */
-    private String telephone;
+    private String phone;
 
     /**
      *
@@ -177,8 +177,8 @@ public class Admin {
      *
      * @mbg.generated Thu Aug 22 17:02:20 CST 2019
      */
-    public String getTelephone() {
-        return telephone;
+    public String getPhone() {
+        return phone;
     }
 
     /**
@@ -189,8 +189,8 @@ public class Admin {
      *
      * @mbg.generated Thu Aug 22 17:02:20 CST 2019
      */
-    public void setTelephone(String telephone) {
-        this.telephone = telephone;
+    public void setTelephone(String phone) {
+        this.phone = phone;
     }
 
     /**
